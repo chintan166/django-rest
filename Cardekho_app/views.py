@@ -5,10 +5,39 @@ from django.http import JsonResponse,HttpResponse
 from .api_file.serializers import CarSerializer,ShowroomSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from rest_framework.authentication import BasicAuthentication,SessionAuthentication
+from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser
+
+class Showroom_Viewset(viewsets.ViewSet):
+    def list(self, request):
+        queryset = Showroomlist.objects.all()
+        serializer = ShowroomSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = Showroomlist.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = ShowroomSerializer(user)
+        return Response(serializer.data)
+    
+    def create(self,request):
+        serializer = ShowroomSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
 class Showroom_view(APIView):
+    # authentication_classes = [BasicAuthentication]
+    # permission_classes = [IsAdminUser]
+    
+    # authentication_classes = [SessionAuthentication]
+    #permission_classes = [IsAuthenticated]
     
     def get(self,request):
         showroom = Showroomlist.objects.all()

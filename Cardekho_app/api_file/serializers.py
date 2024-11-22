@@ -1,11 +1,17 @@
 from rest_framework import serializers
-from ..models import Carlist,Showroomlist
+from ..models import Carlist,Showroomlist,Review
 
 def alphanumberic(value):
     if not str(value).isalnum():
         raise serializers.ValidationError("only alphanumeric characeter are allowed")
     
+class ReviewSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = "__all__"
+        
 class CarSerializer(serializers.ModelSerializer):
+    Reviews = ReviewSerializers(many=True,read_only=True)
     class Meta:
         model = Carlist
         fields = "__all__"
@@ -25,3 +31,4 @@ class ShowroomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Showroomlist
         fields = "__all__"
+        
